@@ -1,0 +1,38 @@
+# --- DEPLOYMENT (Manages the Pods) ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-deployment
+spec:
+  replicas: 2               # Runs 2 copies for safety
+  selector:
+    matchLabels:
+      app: flask-app
+  template:
+    metadata:
+      labels:
+        app: flask-app
+    spec:
+      containers:
+      - name: flask-container
+        image: my-app:v2    # <--- USES YOUR IMAGE FROM PHASE 1
+        imagePullPolicy: Never  # IMPORTANT: Uses local image, doesn't download
+        ports:
+        - containerPort: 5000
+
+---
+# --- SERVICE (Networking) ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask-service
+spec:
+  type: NodePort           # Exposes it to your browser
+  selector:
+    app: flask-app         # Connects to the deployment above
+  ports:
+    - port: 80
+      targetPort: 5000     # The container's internal port
+      nodePort: 30005      # The port you will type in browser
+
+

@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  # Service 1: Your Python Application
+  web-app:
+    build: ./app            # Builds the Dockerfile from the 'app' folder
+    ports:
+      - "5000:5000"         # Maps PC port 5000 to Container port 5000
+    depends_on:
+      - redis-db            # Tells Docker to start Redis before the App
+    environment:
+      - FLASK_APP=app.py
+
+  # Service 2: The Database (Satisfies the 2nd service requirement)
+  redis-db:
+    image: "redis:alpine"   # Uses a pre-built image from Docker Hub
+    ports:
+      - "6379:6379"         # Standard Redis port
+    networks:
+      - default             # They share the default network automatically
+    volumes:
+      - redis-data:/data   # <--- CHALLENGE: Volume saves data even if container is deleted
+
+# Define the persistent volume (Satisfies "Add Volume" challenge)
+volumes:
+  redis-data:
+
