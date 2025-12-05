@@ -13,7 +13,7 @@ def hello():
     try:
         count = r.incr('hits')
         # We changed the HTML here for v2 👇
-        return f"<h1>Phase 1 App (v2)</h1><p>UPDATED VERSION</p><br>Visits: {count}"
+        return f"<h1>Phase 4 App (v3) - CI/CD WORKING</h1><p>UPDATED VERSION</p><br>Visits: {count}"
     except redis.ConnectionError:
         # We changed the HTML here too 👇
         return "<h1>Phase 4 App (v3) - CI/CD WORKING</h1><p>UPDATED VERSION</p><br>Redis is not reachable yet."
