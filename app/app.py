@@ -16,7 +16,7 @@ def hello():
         return f"<h1>Phase 1 App (v2)</h1><p>UPDATED VERSION</p><br>Visits: {count}"
     except redis.ConnectionError:
         # We changed the HTML here too 👇
-        return "<h1>Phase 1 App (v2)</h1><p>UPDATED VERSION</p><br>Redis is not reachable yet."
+        return "<h1>Phase 4 App (v3) - CI/CD WORKING</h1><p>UPDATED VERSION</p><br>Redis is not reachable yet."
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
