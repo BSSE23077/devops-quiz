@@ -1,10 +1,44 @@
-# --- DEPLOYMENT (Manages the Pods) ---
+# --- 1. REDIS DEPLOYMENT (The Database Backend) ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:alpine
+        ports:
+        - containerPort: 6379
+---
+# --- 2. REDIS SERVICE (The "Phone Number" for the DB) ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-db        # <--- CRITICAL: MUST BE "redis-db" TO MATCH APP.PY
+spec:
+  selector:
+    app: redis
+  ports:
+    - protocol: TCP
+      port: 6379
+      targetPort: 6379
+---
+# --- 3. FLASK APP DEPLOYMENT (The Frontend) ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: flask-deployment
 spec:
-  replicas: 2               # Runs 2 copies for safety
+  replicas: 2
   selector:
     matchLabels:
       app: flask-app
@@ -15,24 +49,21 @@ spec:
     spec:
       containers:
       - name: flask-container
-        image: my-app:v2    # <--- USES YOUR IMAGE FROM PHASE 1
-        imagePullPolicy: Never  # IMPORTANT: Uses local image, doesn't download
+        image: huz04/my-app:v3   # Ensure this matches your latest pushed image
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
-
 ---
-# --- SERVICE (Networking) ---
+# --- 4. FLASK APP SERVICE (The Entry Point) ---
 apiVersion: v1
 kind: Service
 metadata:
   name: flask-service
 spec:
-  type: NodePort           # Exposes it to your browser
+  type: NodePort
   selector:
-    app: flask-app         # Connects to the deployment above
+    app: flask-app
   ports:
     - port: 80
-      targetPort: 5000     # The container's internal port
-      nodePort: 30005      # The port you will type in browser
-
-
+      targetPort: 5000
+      nodePort: 30005     # <--- This is why we check port 30005
